@@ -1,7 +1,8 @@
 package l10n
 
 import (
-	"errors"
+	"github.com/pkg/errors"
+	"github.com/xelaj/errs"
 
 	"github.com/iafan/Plurr/go/plurr"
 )
@@ -16,18 +17,31 @@ type Context struct {
 }
 
 // GetLanguage returns the current language of the context.
-func (lc *Context) GetLang() string {
+func (lc *Context) Lang() string {
 	return lc.lang
 }
 
 // Tr returns a translated version of the string
 func (lc *Context) Tr(key string) string {
-	return lc.tr(key, lc.lang)
+	res, err := lc.tr(key)
+	if err != nil {
+		return key
+	}
+	return res
+}
+
+func (lc *Context) TrWithError(key string) (string, error) {
+	return lc.tr(key)
 }
 
 // Trf returns a formatted version of the string
 func (lc *Context) Trf(key string, params plurr.Params) (string, error) {
-	s, err := lc.plurr.Format(lc.Tr(key), params)
+	translated, err := lc.tr(key)
+	if err != nil {
+		return "", errors.Wrap(err, "translating")
+	}
+
+	s, err := lc.plurr.Format(translated, params)
 	if err != nil {
 		return "", errors.New(key + ": " + err.Error())
 	}
@@ -43,33 +57,35 @@ func (lc *Context) Strf(key string, params plurr.Params) string {
 	return r
 }
 
-func (lc *Context) tr(key, lang string) string {
-	resource, ok := lc.pool.Resources[lang]
-	if !ok {
-		err := lc.pool.PreloadResource(lang)
-		if err != nil {
-			return key
-		}
-
-		resource = lc.pool.Resources[lang]
+// tr исключительно достает из пула только сами переводы, дополнением занимаются публичные функции
+// tr будет стараться искать альтернативные ключи
+func (lc *Context) tr(key string) (string, error) {
+	err := lc.pool.LoadResource(lc.lang)
+	if err != nil {
+		return key, errors.Wrap(err, "loading resource")
 	}
+
+	resource := lc.pool.Resources[lc.lang]
 
 	s, ok := resource[key]
 	if ok {
-		return s
+		return s, nil
 	}
-	return lc.trAlternate(key, lang)
-}
 
-func (lc *Context) trAlternate(key, lang string) string {
-	info, err := langInfo(lc.pool.resourcePath, lang)
+	alternativeLocale := ""
+	for _, locale := range lc.pool.locales {
+		if locale.Code == lc.lang {
+			alternativeLocale = locale.Extends
+		}
+	}
+	if alternativeLocale == "" {
+		return key, errs.NotFound("key", key)
+	}
+
+	ctx, err := lc.pool.GetContext(alternativeLocale)
 	if err != nil {
-		return key
+		return key, errors.Wrap(err, "getting context")
 	}
 
-	if info.Extends != "" {
-		return lc.tr(key, info.Extends)
-	}
-
-	return key
+	return ctx.tr(key)
 }

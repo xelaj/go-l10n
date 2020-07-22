@@ -10,7 +10,7 @@ import (
 func main() {
 	// create localization pool with "en" as a default language
 	// and load string resources
-	lp, err := l10n.NewPool("/path/to/your/system/locale", "YourAppName", "en_GB")
+	lp, err := l10n.NewPool("/home/r0ck3t/go/src/github.com/xelaj/go-l10n/examples/locale", "YourAppName", "en_GB")
 	if err != nil {
 		fmt.Println("you don't have en_GB localization!")
 		fmt.Println("'lp' will work, but return message keys only!")
