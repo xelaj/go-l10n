@@ -3,8 +3,6 @@ package l10n
 import (
 	"path/filepath"
 
-	"github.com/xelaj/errs"
-
 	"github.com/gobuffalo/envy"
 	"github.com/iafan/Plurr/go/plurr"
 	"github.com/pkg/errors"
@@ -90,52 +88,19 @@ func LoadResource(lang string) error {
 func MustAll(items []string) error {
 	Init()
 
-	errorsMultiple := &errs.MultipleErrors{}
-	for _, item := range items {
-		_, err := mainContext.TrWithError(item)
-		errorsMultiple.Add(err)
-	}
-	return errorsMultiple.Normalize()
+	return mainContext.MustAll(items)
 }
-
-type MsgCodeReturner interface {
-	Code() string
-}
-
-type codeGetter uint8
-
-type MessageCode func(privateParamss ...interface{}) string
 
 func Message(key string) MessageCode {
-	return func(privateParams ...interface{}) string {
-		if len(privateParams) > 0 {
-			if _, ok := privateParams[0].(codeGetter); !ok {
-				panic("do not use additional parameters")
-			}
-			return key
-		}
-		return Tr(key)
-	}
+	return ImplicitCtxMessage(&mainContext, key)
 }
-
-func (m MessageCode) Code() string {
-	return m(codeGetter(0))
-}
-
-type MessageWithParamsCode func(params map[string]interface{}, privateParams ...interface{}) string
 
 func MessageWithParams(key string) MessageWithParamsCode {
-	return func(params map[string]interface{}, privateParams ...interface{}) string {
-		if len(privateParams) > 0 {
-			if _, ok := privateParams[0].(codeGetter); !ok {
-				panic("do not use additional parameters")
-			}
-			return key
-		}
-		return Strf(key, params)
-	}
+	return ImplicitCtxMessageWithParams(&mainContext, key)
 }
 
-func (m MessageWithParamsCode) Code() string {
-	return m(nil, codeGetter(0))
+func DefaultTranslator() Translator {
+	Init()
+
+	return mainContext
 }

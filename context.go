@@ -89,3 +89,63 @@ func (lc *Context) tr(key string) (string, error) {
 
 	return ctx.tr(key)
 }
+
+func (lc *Context) Message(key string) MessageCode {
+	t := Translator(lc)
+	return ImplicitCtxMessage(&t, key)
+}
+func (lc *Context) MessageWithParams(key string) MessageWithParamsCode {
+	t := Translator(lc)
+	return ImplicitCtxMessageWithParams(&t, key)
+}
+
+func (lc *Context) MustAll(items []string) error {
+	errorsMultiple := &errs.MultipleErrors{}
+	for _, item := range items {
+		_, err := lc.TrWithError(item)
+		errorsMultiple.Add(err)
+	}
+	return errorsMultiple.Normalize()
+}
+
+type MsgCodeReturner interface {
+	Code() string
+}
+
+type codeGetter uint8
+
+type MessageCode func(privateParamss ...interface{}) string
+
+func ImplicitCtxMessage(lc *Translator, key string) MessageCode {
+	return func(privateParams ...interface{}) string {
+		if len(privateParams) > 0 {
+			if _, ok := privateParams[0].(codeGetter); !ok {
+				panic("do not use additional parameters")
+			}
+			return key
+		}
+		return (*lc).Tr(key)
+	}
+}
+
+func (m MessageCode) Code() string {
+	return m(codeGetter(0))
+}
+
+type MessageWithParamsCode func(params map[string]interface{}, privateParams ...interface{}) string
+
+func ImplicitCtxMessageWithParams(lc *Translator, key string) MessageWithParamsCode {
+	return func(params map[string]interface{}, privateParams ...interface{}) string {
+		if len(privateParams) > 0 {
+			if _, ok := privateParams[0].(codeGetter); !ok {
+				panic("do not use additional parameters")
+			}
+			return key
+		}
+		return (*lc).Strf(key, params)
+	}
+}
+
+func (m MessageWithParamsCode) Code() string {
+	return m(nil, codeGetter(0))
+}

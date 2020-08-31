@@ -3,12 +3,10 @@ package l10n
 import (
 	"path/filepath"
 
-	"github.com/xelaj/errs"
-
-	"github.com/ungerik/go-dry"
-
 	"github.com/iafan/Plurr/go/plurr"
 	"github.com/pkg/errors"
+	"github.com/ungerik/go-dry"
+	"github.com/xelaj/errs"
 )
 
 type Translator interface {
@@ -17,6 +15,9 @@ type Translator interface {
 	Trf(key string, params plurr.Params) (string, error)
 	Strf(key string, params plurr.Params) string
 	Lang() string
+	MustAll(items []string) error
+	Message(key string) MessageCode
+	MessageWithParams(key string) MessageWithParamsCode
 }
 
 // Resources is an array that holds string resources for a particular language
@@ -64,7 +65,7 @@ func (lp *Pool) GetContext(lang string) (*Context, error) {
 	}
 
 	return &Context{
-		pool:  builtinPool,
+		pool:  lp,
 		lang:  lang,
 		plurr: plurr.New().SetLocale(lang),
 	}, nil

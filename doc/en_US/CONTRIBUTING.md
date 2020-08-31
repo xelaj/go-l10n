@@ -1,10 +1,10 @@
 # Contributing to go-l10n
 
-based on [Xelaj styleguides](https://github.com/xelaj/xelaj/birch/blob/master/CONTRIBUTING.md).
+based on [Xelaj styleguides](https://github.com/xelaj/birch/blob/master/CONTRIBUTING.md).
 
 **english** [русский](https://github.com/xelaj/go-l10n/blob/master/doc/ru_RU/CONTRIBUTING.md)
 
-:new_moon_with_face: :new_moon_with_face: First of all, thanks for your helping! :full_moon_with_face: :full_moon_with_face:
+🌚🌚 First of all, thanks for your helping! 🌝🌝
 
 This page briefly describes the process of developing both the specific go-l10n package and all Xelaj projects. if you read all these rules, you will be the best helper in the whole wild west!
 
@@ -24,7 +24,7 @@ And we also actually want to do [FAQ](https://github.com/xelaj/go-l10n/blob/mast
 
 ## What do I need to know before I can help?
 
-`¯ \ _ (ツ) _ / ¯`
+`¯\_(ツ)_/¯`
 
 ## And how can I help?
 
@@ -52,14 +52,13 @@ Here it is up to you, the only thing is: we are more willing to take pull reques
 * write briefly (no more than 60 characters), everything else - in the description after two (2) new lines
 * pour all your misery into the commit description, not the comment (❌ — `fool, forgot to delete ...` ✅ — `removed ...`)
 * use prefixes, damn it! in general, we love emoji, so attach emoji:
-    * :art: `:art:` if you added a new method to the API.
-    * :memo: `:memo:` if you added documentation (**pay attention!** if you write documentation for the commit you made, you do not need to make a separate commit with the documentation!)
-    * :shirt: `:shirt:` if the build process was updated
-    * :pill: `:pill:` minor updates, fixes in one letter in the documentation, etc. not affecting the operation of the code
-    * :bug: `:bug:` bug fixes!
-    * :lock: `:lock:` if this is a security bug
-    * :twisted_rightwards_arrows: `:twisted_rightwards_arrows:` merge commits. any
-    * :racehorse: `:racehorse:` refactoring code
-    * :white_check_mark: `:white_check_mark:` work with tests
-    * :fire: `:fire:` if you delete (irrevocably!) any part of the service: code, file, configs, whatever.
-
+    * 🎨 `:art:` if you added a new method to the API.
+    * 📝 `:memo:` if you added documentation (**pay attention!** if you write documentation for the commit you made, you do not need to make a separate commit with the documentation!)
+    * 👕 `:shirt:` if the build process was updated
+    * 💊 `:pill:` minor updates, fixes in one letter in the documentation, etc. not affecting the operation of the code
+    * 🐛 `:bug:` bug fixes!
+    * 🔒 `:lock:` if this is a security bug
+    * 🔀 `:twisted_rightwards_arrows:` merge commits. any
+    * 🏇 `:racehorse:` refactoring code
+    * ✅ `:white_check_mark:` work with tests
+    * 🔥 `:fire:` if you delete (irrevocably!) any part of the service: code, file, configs, whatever.
